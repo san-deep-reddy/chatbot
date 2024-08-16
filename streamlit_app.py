@@ -1,56 +1,102 @@
 import streamlit as st
 from openai import OpenAI
+import variables, os
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+# Predefined OpenAI API key
+OPENAI_API_KEY = variables.api_key
+
+def setup_sidebar():
+    # Center the image and download button in the sidebar
+    st.sidebar.image(variables.picture)
+    
+    # Display name centered
+    st.sidebar.markdown(f'<h2 style="text-align: center;">{variables.name}</h2>', unsafe_allow_html=True)
+
+    # Oval Download Resume Button centered
+    st.sidebar.markdown(
+    f"""
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="{variables.google_drive_cv_url}" target="_blank">
+            <button style="
+                background-color:#4CAF50; 
+                color:white; 
+                padding:10px 25px; 
+                font-size:16px; 
+                border:none; 
+                border-radius:50px; 
+                outline:none;
+                cursor:pointer;
+                ">
+                Download Resume
+            </button>
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
+    
+    # About the Developer
+    st.sidebar.markdown("### About the Developer")
+    st.sidebar.markdown(
+        f"This app was developed by Sandeep D using LLM. You can reach me via email at {variables.email}. Or connect with me on [LinkedIn]({variables.url_linkedin})."
+    )
+    
+    # Privacy
+    st.sidebar.markdown(
+    """
+    <div style="font-size: 1px; margin-top: 100px;">
+        <p>Privacy: We do not retain and store user data from the chat session.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-else:
+def display_intro():
+    st.markdown(f"<h1 style='font-size:30px;'>Hi, this is Rocky, I am {variables.name.split()[0]}'s AI assistant! 🤖.</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='font-size:22px;'>I can answer all your questions regarding his skills and professional experience.</h2>", unsafe_allow_html=True)
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
-
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Display the existing chat messages via `st.chat_message`.
-    for message in st.session_state.messages:
+def display_messages(messages):
+    for message in messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+def generate_response(client, user_input):
+    resume_prompt = variables.resume_text
+    messages = [{"role": "system", "content": resume_prompt}] + st.session_state.messages
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        stream=True,
+    )
+    return response
 
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+# Show title and description.
+display_intro()
 
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
+# Create an OpenAI client.
+client = OpenAI(api_key=OPENAI_API_KEY)
 
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+# Setup sidebar
+setup_sidebar()
+
+# Create a session state variable to store the chat messages.
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display the existing chat messages.
+display_messages(st.session_state.messages)
+
+# Create a chat input field to allow the user to enter a message.
+if prompt := st.chat_input("Hi, please ask any questions that you want to know about Sandeep professionally."):
+    # Store and display the current prompt.
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Generate a response using the OpenAI API.
+    response = generate_response(client, prompt)
+
+    # Stream the response to the chat using `st.write_stream`, then store it in session state.
+    with st.chat_message("assistant"):
+        response_content = st.write_stream(response)
+    st.session_state.messages.append({"role": "assistant", "content": response_content})
