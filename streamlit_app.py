@@ -1,9 +1,21 @@
+import fitz
 import streamlit as st
 from openai import OpenAI
-import variables, os
+import variables
 
 # Predefined OpenAI API key
 OPENAI_API_KEY = variables.api_key
+
+# Function to extract text from PDF
+def extract_text_from_pdf(pdf_path):
+    doc = fitz.open(pdf_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    return text
+
+# Extract text from the resume PDF
+resume_text = extract_text_from_pdf(variables.local_cv_path)
 
 def setup_sidebar():
     # Center the image and download button in the sidebar
@@ -51,8 +63,8 @@ def setup_sidebar():
     )
 
 def display_intro():
-    st.markdown(f"<h1 style='font-size:30px;'>Hi, this is Rocky, I am {variables.name.split()[0]}'s AI assistant! 🤖.</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='font-size:22px;'>I can answer all your questions regarding his skills and professional experience.</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='font-size:30px;'>Welcome to Rocky, {variables.name.split()[0]}'s AI assistant! 🚀</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='font-size:22px;'>I'm here to assist you with any questions about his skills and professional experience.</h2>", unsafe_allow_html=True)
 
 def display_messages(messages):
     for message in messages:
@@ -60,7 +72,7 @@ def display_messages(messages):
             st.markdown(message["content"])
 
 def generate_response(client, user_input):
-    resume_prompt = variables.resume_text
+    resume_prompt = resume_text
     messages = [{"role": "system", "content": resume_prompt}] + st.session_state.messages
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -69,33 +81,33 @@ def generate_response(client, user_input):
     )
     return response
 
-# Show title and description.
+# Show title and description
 display_intro()
 
-# Create an OpenAI client.
+# Create an OpenAI client
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Setup sidebar
 setup_sidebar()
 
-# Create a session state variable to store the chat messages.
+# Create a session state variable to store the chat messages
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display the existing chat messages.
+# Display the existing chat messages
 display_messages(st.session_state.messages)
 
-# Create a chat input field to allow the user to enter a message.
+# Create a chat input field to allow the user to enter a message
 if prompt := st.chat_input("Hi, please ask any questions that you want to know about Sandeep professionally."):
-    # Store and display the current prompt.
+    # Store and display the current prompt
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate a response using the OpenAI API.
+    # Generate a response using the OpenAI API
     response = generate_response(client, prompt)
 
-    # Stream the response to the chat using `st.write_stream`, then store it in session state.
+    # Stream the response to the chat using `st.write_stream`, then store it in session state
     with st.chat_message("assistant"):
         response_content = st.write_stream(response)
     st.session_state.messages.append({"role": "assistant", "content": response_content})
