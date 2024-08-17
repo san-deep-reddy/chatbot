@@ -15,7 +15,7 @@ url_github = "https://github.com/san-deep-reddy"
 google_drive_cv_url = "https://drive.google.com/file/d/18HYq_edUMfFQyqs-0TRvAsSUOEKKg7sv/view?usp=sharing"  # Replace with actual Google Drive link
 
 # Path to the local CV file for text extraction
-local_cv_path = "/workspaces/chatbot/files/SandeepReddyResume.pdf"
+local_cv_path = "../files/SandeepReddyResume.pdf"
 
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
