@@ -32,8 +32,7 @@ def setup_sidebar():
         </a>
     </div>
     """,
-    unsafe_allow_html=True
-)
+    unsafe_allow_html=True)
     
     # About the Developer
     st.sidebar.markdown("### About the Developer")
@@ -64,7 +63,7 @@ def generate_response(client, user_input):
     resume_prompt = variables.resume_text
     messages = [{"role": "system", "content": resume_prompt}] + st.session_state.messages
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=messages,
         stream=True,
     )
