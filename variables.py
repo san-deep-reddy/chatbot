@@ -2,7 +2,7 @@ import fitz
 import streamlit as st
 
 # Path to your picture
-picture = "Sandeep.jpg"
+picture = "../files/Sandeep.jpg"
 
 # Your name
 name = "Sandeep Reddy D"
