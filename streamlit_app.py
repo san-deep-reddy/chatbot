@@ -55,7 +55,7 @@ def setup_sidebar():
     # Privacy
     st.sidebar.markdown(
     """
-    <div style="font-size: 1px; margin-top: 70px;">
+    <div style="font-size: 1px; margin-top: 60px;">
         <p>Privacy: We do not retain and store user data from the chat session.</p>
     </div>
     """,
