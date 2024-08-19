@@ -55,7 +55,7 @@ def setup_sidebar():
     # Privacy
     st.sidebar.markdown(
     """
-    <div style="font-size: 1px; margin-top: 100px;">
+    <div style="font-size: 1px; margin-top: 80px;">
         <p>Privacy: We do not retain and store user data from the chat session.</p>
     </div>
     """,
@@ -64,7 +64,7 @@ def setup_sidebar():
 
 def display_intro():
     st.markdown(f"<h1 style='font-size:30px;'>Welcome to Rocky, {variables.name.split()[0]}'s AI assistant! 🚀</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills, experience, and more.</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills experience, and more.</h2>", unsafe_allow_html=True)
 
 def display_messages(messages):
     for message in messages:
