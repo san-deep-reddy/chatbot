@@ -49,7 +49,7 @@ def setup_sidebar():
     # About the Developer
     st.sidebar.markdown("### About the Developer")
     st.sidebar.markdown(
-        f"This app was crafted by Sandeep D, leveraging the power of Large Language Models (LLMs). For any inquiries or feedback, feel free to reach out via email at {variables.email}. You can also connect with me on [LinkedIn]({variables.url_linkedin}) to stay in touch and explore more of my work."
+        f"This app was created by Sandeep D, leveraging the power LLMs. For any inquiries or feedback, feel free to reach out via email at {variables.email}. You can also connect with me on [LinkedIn]({variables.url_linkedin}) to stay in touch."
     )
     
     # Privacy
@@ -63,8 +63,8 @@ def setup_sidebar():
     )
 
 def display_intro():
-    st.markdown(f"<h1 style='font-size:30px;'>Welcome to Rocky, your guide to {variables.name.split()[0]}'s professional world! 🚀</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills, experience, and more. Feel free to ask any questions you have!</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='font-size:30px;'>Welcome to Rocky, {variables.name.split()[0]}'s AI assistant! 🚀</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills, experience, and more.</h2>", unsafe_allow_html=True)
 
 def display_messages(messages):
     for message in messages:
