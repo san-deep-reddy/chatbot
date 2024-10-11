@@ -1,11 +1,9 @@
 import fitz
 import streamlit as st
-from openai import OpenAI
+import google.generativeai as genai
 import variables
 
-# Predefined OpenAI API key
-OPENAI_API_KEY = variables.api_key
-
+genai.configure(variables.api_key)
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
@@ -49,14 +47,14 @@ def setup_sidebar():
     # About the Developer
     st.sidebar.markdown("### About the Developer")
     st.sidebar.markdown(
-        f"This app was created by Sandeep D, leveraging the power LLMs. For any inquiries or feedback, feel free to reach out via email at {variables.email}. You can also connect with me on [LinkedIn]({variables.url_linkedin}) to stay in touch."
+        f"This app was created by Sandeep D, leveraging the power of LLMs. For any inquiries or feedback, feel free to reach out via email at {variables.email}. You can also connect with me on [LinkedIn]({variables.url_linkedin}) to stay in touch."
     )
     
     # Privacy
     st.sidebar.markdown(
     """
     <div style="font-size: 1px; margin-top: 50px;">
-        <p>Privacy: We do not retain and store user data from the chat session.</p>
+        <p>Privacy: We do not retain or store user data from the chat session.</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -64,28 +62,27 @@ def setup_sidebar():
 
 def display_intro():
     st.markdown(f"<h1 style='font-size:30px;'>Welcome to Rocky, {variables.name.split()[0]}'s AI assistant! 🚀</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills, experience and more.</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='font-size:22px;'>I'm here to help you explore his skills, experience, and more.</h2>", unsafe_allow_html=True)
 
 def display_messages(messages):
     for message in messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-def generate_response(client, user_input):
-    resume_prompt = resume_text
-    messages = [{"role": "system", "content": resume_prompt}] + st.session_state.messages
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        stream=True,
+def generate_response(model, user_input):
+    chat = model.start_chat(
+        history=[
+            {"role": "system", "parts": resume_text}
+        ] + st.session_state.messages
     )
-    return response
+    response = chat.send_message(user_input)
+    return response.text
 
 # Show title and description
 display_intro()
 
-# Create an OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Create a generative model client
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Setup sidebar
 setup_sidebar()
@@ -104,10 +101,10 @@ if prompt := st.chat_input("Hi, please ask any questions that you want to know a
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate a response using the OpenAI API
-    response = generate_response(client, prompt)
+    # Generate a response using the Gemini model
+    response_text = generate_response(model, prompt)
 
-    # Stream the response to the chat using `st.write_stream`, then store it in session state
+    # Display and store the assistant's response
     with st.chat_message("assistant"):
-        response_content = st.write_stream(response)
-    st.session_state.messages.append({"role": "assistant", "content": response_content})
+        st.markdown(response_text)
+    st.session_state.messages.append({"role": "assistant", "content": response_text})
