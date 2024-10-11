@@ -1,9 +1,11 @@
 import fitz
 import streamlit as st
-import google.generativeai as genai
+from genai import GenerativeModel
 import variables
 
-genai.configure(api_key = variables.api_key)
+# Configure the API key for the generative model
+genai.configure(api_key=variables.api_key)
+
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
@@ -70,19 +72,28 @@ def display_messages(messages):
             st.markdown(message["content"])
 
 def generate_response(model, user_input):
-    chat = model.start_chat(
-        history=[
-            {"role": "system", "parts": resume_text}
-        ] + st.session_state.messages
-    )
+    # Converting the session state messages into the correct format
+    formatted_messages = [
+        {"role": "system", "parts": [resume_text]}  # System message with the resume text
+    ]
+    
+    # Add previous user and assistant messages from session state
+    for message in st.session_state.messages:
+        formatted_messages.append({"role": message["role"], "parts": [message["content"]]})
+
+    # Start a chat session with the model
+    chat = model.start_chat(history=formatted_messages)
+    
+    # Send the new user input to the model
     response = chat.send_message(user_input)
+    
     return response.text
 
 # Show title and description
 display_intro()
 
 # Create a generative model client
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = GenerativeModel("gemini-1.5-flash")
 
 # Setup sidebar
 setup_sidebar()
