@@ -101,6 +101,9 @@ display_messages(st.session_state.messages)
 
 # Create a chat input field to allow the user to enter a message
 if prompt := st.chat_input("Hi, please ask any questions that you want to know about Sandeep professionally."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
     response_text = generate_response(model, prompt, resume_text)
 
     # Display and store the assistant's response
