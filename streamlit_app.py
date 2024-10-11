@@ -72,21 +72,14 @@ def display_messages(messages):
             st.markdown(message["content"])
 
 def generate_response(model, user_input, resume_text):
-    # Get the user input from session state (assuming you store it in "prompt")
-    user_input = st.session_state.get("prompt", "")
-
-    formatted_messages = []
-
     # Combine the user prompt and resume text
-    if user_input:
-        combined_input = f"{user_input}. Can you tell me more about {resume_text}?"
-        formatted_messages.append({"role": "user", "parts": [combined_input]})
+    combined_input = f"{user_input}\n\nContext from resume:\n{resume_text}"
 
     # Start a chat session with the model
-    chat = model.start_chat(history=formatted_messages)
+    chat = model.start_chat(history=[])
 
-    # Send the new user input to the model
-    response = chat.send_message(user_input)
+    # Send the combined input to the model
+    response = chat.send_message(combined_input)
 
     return response.text
 
@@ -108,12 +101,6 @@ display_messages(st.session_state.messages)
 
 # Create a chat input field to allow the user to enter a message
 if prompt := st.chat_input("Hi, please ask any questions that you want to know about Sandeep professionally."):
-    # Store and display the current prompt
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # Generate a response using the Gemini model
     response_text = generate_response(model, prompt, resume_text)
 
     # Display and store the assistant's response
