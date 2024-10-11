@@ -17,6 +17,16 @@ def extract_text_from_pdf(pdf_path):
 # Extract text from the resume PDF
 resume_text = extract_text_from_pdf(variables.local_cv_path)
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "chat_history" not in st.session_state:
+    system_message = f"You are an AI assistant named Rocky, representing {variables.name}. Use the following resume information to answer questions about {variables.name}'s professional background: {resume_text}"
+    st.session_state.chat_history = [
+        {"role": "user", "parts": [system_message]},
+        {"role": "model", "parts": ["Understood. I'm Rocky, an AI assistant representing " + variables.name + ". I'm ready to answer questions about their professional background based on the resume information provided. How can I help you today?"]}
+    ]
+
 def setup_sidebar():
     # Center the image and download button in the sidebar
     st.sidebar.image(variables.picture)
