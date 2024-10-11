@@ -71,16 +71,8 @@ def display_messages(messages):
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-def generate_response(model, user_input, resume_text):
-    # Combine the user prompt and resume text
-    combined_input = f"{user_input}\n\nContext from resume:\n{resume_text}"
-
-    # Start a chat session with the model
-    chat = model.start_chat(history=[])
-
-    # Send the combined input to the model
-    response = chat.send_message(combined_input)
-
+def generate_response(model, user_input, chat):
+    response = chat.send_message(user_input)
     return response.text
 
 # Show title and description
@@ -92,19 +84,26 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # Setup sidebar
 setup_sidebar()
 
-# Create a session state variable to store the chat messages
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# Initialize the chat with a system message containing the resume context
+if "chat" not in st.session_state:
+    system_message = f"You are an AI assistant named Rocky, representing {variables.name}. Use the following resume information to answer questions about {variables.name}'s professional background: {resume_text}"
+    st.session_state.chat = model.start_chat(history=[{"role": "system", "parts": [system_message]}])
 
 # Display the existing chat messages
 display_messages(st.session_state.messages)
 
 # Create a chat input field to allow the user to enter a message
-if prompt := st.chat_input("Hi, please ask any questions that you want to know about Sandeep professionally."):
+if prompt := st.chat_input(f"Hi, please ask any questions that you want to know about {variables.name.split()[0]} professionally."):
+    # Store and display the current prompt
     st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-    response_text = generate_response(model, prompt, resume_text)
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Generate a response using the Gemini model
+    response_text = generate_response(model, prompt, st.session_state.chat)
 
     # Display and store the assistant's response
     with st.chat_message("assistant"):
