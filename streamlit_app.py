@@ -71,22 +71,25 @@ def display_messages(messages):
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-def generate_response(model, user_input):
-    # Converting the session state messages into the correct format
-    formatted_messages = [
-        {"role": "system", "parts": [resume_text]}  # System message with the resume text
-    ]
-    
-    # Add previous user and assistant messages from session state
-    for message in st.session_state.messages:
-        formatted_messages.append({"role": message["role"], "parts": [message["content"]]})
+def generate_response(model, user_input, resume_text):
+    # Get the user input from session state (assuming you store it in "prompt")
+    user_input = st.session_state.get("prompt", "")
+
+    formatted_messages = []
+
+    # Add the user input as a message with role "user"
+    if user_input:
+        formatted_messages.append({"role": "user", "parts": [user_input]})
+
+    # Add the system message with the resume text
+    formatted_messages.append({"role": "system", "parts": [resume_text]})
 
     # Start a chat session with the model
     chat = model.start_chat(history=formatted_messages)
-    
+
     # Send the new user input to the model
     response = chat.send_message(user_input)
-    
+
     return response.text
 
 # Show title and description
