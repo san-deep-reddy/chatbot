@@ -114,7 +114,7 @@ if prompt := st.chat_input("Hi, please ask any questions that you want to know a
         st.markdown(prompt)
 
     # Generate a response using the Gemini model
-    response_text = generate_response(model, prompt)
+    response_text = generate_response(model, prompt, resume_text)
 
     # Display and store the assistant's response
     with st.chat_message("assistant"):
