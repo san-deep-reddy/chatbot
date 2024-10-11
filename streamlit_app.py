@@ -3,7 +3,7 @@ import streamlit as st
 import google.generativeai as genai
 import variables
 
-genai.configure(variables.api_key)
+genai.configure(api_key = variables.api_key)
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
