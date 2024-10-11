@@ -1,6 +1,6 @@
 import fitz
 import streamlit as st
-from genai import GenerativeModel
+import google.generativeai as genai
 import variables
 
 # Configure the API key for the generative model
