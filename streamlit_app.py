@@ -71,9 +71,17 @@ def display_messages(messages):
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-def generate_response(model, user_input, chat):
-    response = chat.send_message(user_input)
-    return response.text
+def generate_response(model, user_input, chat_history):
+    # Append the new user message to the chat history
+    chat_history.append({"role": "user", "parts": [user_input]})
+    
+    # Generate the response
+    response = model.generate_content(chat_history)
+    
+    # Append the model's response to the chat history
+    chat_history.append({"role": "model", "parts": [response.text]})
+    
+    return response.text, chat_history
 
 # Show title and description
 display_intro()
@@ -103,7 +111,7 @@ if prompt := st.chat_input(f"Hi, please ask any questions that you want to know 
         st.markdown(prompt)
 
     # Generate a response using the Gemini model
-    response_text = generate_response(model, prompt, st.session_state.chat)
+    response_text, st.session_state.chat_history = generate_response(model, prompt, st.session_state.chat_history)
 
     # Display and store the assistant's response
     with st.chat_message("assistant"):
