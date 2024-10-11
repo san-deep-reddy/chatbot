@@ -93,7 +93,7 @@ def generate_response(model, user_input):
 display_intro()
 
 # Create a generative model client
-model = GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Setup sidebar
 setup_sidebar()
