@@ -7,7 +7,7 @@ picture = "Sandeep.jpg"
 # Your name
 name = "Sandeep Reddy D"
 email = "reddydvvsn@gmail.com"
-api_key = st.secrets["OPENAI_API_KEY"]
+api_key = st.secrets["GEMINI_API_KEY"]
 
 # URLs to your LinkedIn, GitHub, and CV
 url_linkedin = "https://www.linkedin.com/in/san-deep-reddy"
