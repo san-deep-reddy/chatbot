@@ -12,7 +12,7 @@ api_key = st.secrets["GEMINI_API_KEY"]
 # URLs to your LinkedIn, GitHub, and CV
 url_linkedin = "https://www.linkedin.com/in/san-deep-reddy"
 url_github = "https://github.com/san-deep-reddy"
-google_drive_cv_url = "https://drive.google.com/file/d/1ursatb3N-aPdo6ObJzuP002izbCZH42P/view?usp=sharing"  # Replace with actual Google Drive link
+google_drive_cv_url = "https://drive.google.com/file/d/1V5LFetXKmlVrcaM7BbBq7VIbt9sTCC9Y/view?usp=sharing"  # Replace with actual Google Drive link
 
 # Path to the local CV file for text extraction
 local_cv_path = "SandeepReddyResume.pdf"
