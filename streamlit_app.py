@@ -77,12 +77,10 @@ def generate_response(model, user_input, resume_text):
 
     formatted_messages = []
 
-    # Add the user input as a message with role "user"
+    # Combine the user prompt and resume text
     if user_input:
-        formatted_messages.append({"role": "user", "parts": [user_input]})
-
-    # Add the system message with the resume text
-    formatted_messages.append({"role": "system", "parts": [resume_text]})
+        combined_input = f"{user_input}. Can you tell me more about {resume_text}?"
+        formatted_messages.append({"role": "user", "parts": [combined_input]})
 
     # Start a chat session with the model
     chat = model.start_chat(history=formatted_messages)
